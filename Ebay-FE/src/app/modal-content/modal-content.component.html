@@ -1,0 +1,45 @@
+
+
+
+
+<div>
+<div class="modal-header mb-4">
+    <h6 class="modal-title pull-left"> Product Images</h6>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true" class="visually-hidden"></span>
+    </button>
+    
+  </div>
+  <div class="modal-body">
+   
+  
+
+    <div id="carouselExample" class="carousel slide">
+      <div class="carousel-inner">
+        <div class="carousel-item img-carousel justify-content-center align-content-center text-center" *ngFor="let item of pictureURL; let index=index" [ngClass]="(index === 0) ? 'active' : ''">
+          <a href="{{item}}" target="_blank"> <img [src]="item" alt="product photo" class="mb-3 text-center" style=" overflow: hidden; width: 100%; height: auto;" ></a>
+        </div>
+  
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+        <!-- <span class="carousel-control-prev-icon" aria-hidden="true"></span> -->
+        <span class="material-icons" style="background-color: black;">
+          chevron_left
+          </span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <span class="material-icons" style="background-color: black;">
+          chevron_right
+          </span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+    
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" (click)="closeModal()">Close</button>
+  </div>
+</div>

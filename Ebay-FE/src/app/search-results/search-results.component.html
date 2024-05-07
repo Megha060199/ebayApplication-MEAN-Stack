@@ -1,0 +1,567 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="container">
+                
+                <div *ngIf="!isResponseAvailable" class="progress" role="progressbar" aria-label="Default striped example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-striped" style="width: 50%"></div>
+                  </div>
+                  <div *ngIf="!isWishListResponseAvailable && wishListActive" class="progress" role="progressbar" aria-label="Default striped example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-striped" style="width: 50%"></div>
+                  </div>
+
+                  <div *ngIf="this.noSearchResult" class="row no-results-view d-flex justify-content-center align-content-center">
+                    <p class="mx-2 my-auto py-3 text-color align-content-center ">No Records</p>
+                </div>
+
+                <div *ngIf="noWishList && wishListActive " class="row no-results-view d-flex justify-content-center align-content-center">
+                    <p class="mx-2 my-auto py-3 text-color align-content-center ">No Records</p>
+                </div>
+                
+                    <div class="d-flex justify-content-end">
+                    <button    *ngIf="searchResultTable.length>0 && !itemDetailsVisible && !wishListActive" [disabled]="isDetailsButtonDisabled" type="button" class="btn btn-light mb-3 text-center align-middle d-flex justify-content-center align-content-center" (click)="onDetailsClick()">Detail<span class="material-icons align-middle">chevron_right</span>
+                        </button>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button    *ngIf="wishListedItems.length>0 && !itemDetailsVisible && wishListActive" [disabled]="isDetailsButtonDisabled" type="button" class="btn btn-light mb-3 text-center align-middle d-flex justify-content-center align-content-center" (click)="onDetailsClick()">Detail<span class="material-icons align-middle">chevron_right</span>
+                        </button>
+                </div>
+
+                
+            <div class="row">   
+
+                <table  class="table table-dark table-striped table-hover" *ngIf="!itemDetailsVisible && wishListActive">
+                    <thead>
+                    <tr *ngIf="wishListedItems.length!=0">
+                        <th scope="col" class="text-white">#</th>
+                        <th scope="col" class="text-white">Image</th>
+                        <th scope="col" class="text-white text-center">Title</th>
+                        <th scope="col" class="text-white">Price</th>
+                        <th scope="col" class="text-white">Shipping</th>
+                        
+                        <th scope="col" class="text-white">Wish List</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                        <tr *ngFor="let item of wishListedItems | paginate: { itemsPerPage: 10, currentPage: p }" class="bg-dark" [class.table-active]="isRowHighlighted(item,true)" >
+                            <th scope="row" class="text-white"> {{wishListedItems.indexOf(item)+1}}</th>
+                            <td class="p-lg-3">
+                                <a *ngIf="item['galleryURL']" href="{{item['galleryURL']}}" target="_blank">
+                                    <img src="{{item['galleryURL']}}"  height="auto" width="100">
+                                </a>
+                                <a *ngIf="!item['galleryURL']" href="../../assets/ebay_default_32.jpg" target="_blank">
+                                    <img  src="../../assets/ebay_default_32.jpg"  height="auto" width="100">
+                                
+                                </a>
+                            </td>
+                            <td >
+                               <a  [routerLink]="[]" class="text-primary a-tag-without-underline" (click)="onItemClick(item['_id'],item)" tooltip="{{ item['title']}}" placement="bottom" containerClass="tooltip-class" >{{truncateText(item['title'])}}</a>
+                            </td>
+                            <td *ngIf="item['price']" class="text-white">
+                             ${{item['price']}}
+                            </td>
+                            <td *ngIf="!item['price']" class="text-white">
+                                N/A
+                               </td>
+                            <td class="text-center" *ngIf="item['shipping']!=0">
+                                ${{item['shipping']}}
+                            </td>
+                            <td  *ngIf="item['shipping']==0">
+                                Free Shipping
+                            </td>
+                            <td class="align-items-center text-center justify-content-center">
+                                <button type="button"  class="btn btn-light align-content-center justify-content-center d-flex" (click)="deleteFromWishList(item['_id'],item['price'])"> 
+                                    <span class="material-icons" style="color: #ac8b33;">
+                                    remove_shopping_cart
+                                    </span>
+                                </button>
+                                <!-- <a [routerLink]="[]" (click)="addToWishList(item)"><span class="material-icons py-1" style="color: black; background-color: white;  border-radius: 3px; padding-left: 10px; padding-right: 10px;">
+                                    add_shopping_cart
+                                    </span></a> -->
+                                    
+                            </td>
+                        </tr>
+                        <tr *ngIf="this.wishListedItems.length!=0" >
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Total Shopping</td>
+                            <td> {{this.wishlistTotal}}</td>
+                        </tr>
+                        
+                    </tbody>
+
+        </table>
+                <table  class="table table-dark table-striped table-hover" *ngIf="!itemDetailsVisible && !wishListActive">
+                    <thead>
+                    <tr *ngIf="searchResultTable.length!=0">
+                        <th scope="col" class="text-white">#</th>
+                        <th scope="col" class="text-white">Image</th>
+                        <th scope="col" class="text-white text-center">Title</th>
+                        <th scope="col" class="text-white">Price</th>
+                        <th scope="col" class="text-white">Shipping</th>
+                        <th scope="col" class="text-white">Zip</th>
+                        <th scope="col" class="text-white">Wish List</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                        <tr *ngFor="let item of searchResultTable | paginate: { itemsPerPage: 10, currentPage: p }" [class.table-active]="isRowHighlighted(item,false)" class="bg-dark">
+                            <th scope="row" class="text-white"> {{searchResultTable.indexOf(item)+1}}</th>
+                            <td class="p-lg-3">
+                                <a *ngIf="item['galleryURL'][0]" href="{{item['galleryURL'][0]}}" target="_blank">
+                                    <img  src="{{item['galleryURL'][0]}}"  height="auto" width="100">
+                                    
+                                
+                                </a>
+                                <a *ngIf="!item['galleryURL'][0]" href="../../assets/ebay_default_32.jpg" target="_blank">
+                                    <img  src="../../assets/ebay_default_32.jpg"  height="auto" width="100">
+                                
+                                </a>
+
+                                
+                            </td>
+                            <td>
+                               <a   [routerLink]="[]" class="text-primary a-tag-without-underline" (click)="onItemClick(item['itemId'][0],item)"  tooltip="{{ item['title'][0]}}" placement="bottom" containerClass="tooltip-class">{{truncateText(item['title'][0])}}</a>
+                            </td>
+                            <td class="text-white" *ngIf="item['sellingStatus'][0]['currentPrice'][0]['__value__']">
+                             ${{item['sellingStatus'][0]['currentPrice'][0]['__value__']}}
+                            </td>
+                            
+                            <td class="text-center" *ngIf="item['shippingInfo'][0]['shippingServiceCost'][0]['__value__']!=0">${{item['shippingInfo'][0]['shippingServiceCost'][0]['__value__']}}</td>
+                            <td *ngIf="item['shippingInfo'][0]['shippingServiceCost'][0]['__value__']==0">Free Shipping</td>
+                            
+                            <td>{{item['postalCode'][0]}}</td>
+                            <td class="align-items-center text-center justify-content-center">
+                                <!-- <button type="button" class="btn btn-dark"></button> -->
+                                <button type="button"  class="btn btn-light align-content-center justify-content-center d-flex" (click)="addToWishList(item)" *ngIf="!isWishListed(item['itemId'][0])">
+                                    <span class="material-icons" style="color: black;">
+                                    add_shopping_cart
+                                    </span>
+                                </button>
+                                <button type="button"  class="btn btn-light align-content-center justify-content-center d-flex" (click)="deleteFromWishList(item['itemId'][0],item['sellingStatus'][0]['currentPrice'][0]['__value__'])" *ngIf="isWishListed(item['itemId'][0])">
+                                    <span class="material-icons" style="color: #ac8b33;">
+                                        remove_shopping_cart
+                                        </span>
+                                    </button>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+
+        </table>
+                <pagination-controls *ngIf="searchResultTable.length!=0 && !itemDetailsVisible"  class="text-center"  [responsive]="true" nextLabel="Next"(pageChange)="p = $event"></pagination-controls>
+                
+                
+                <p class="text-center mt-2" *ngIf="itemDetailsVisible">{{itemTitle}}</p>
+                <div class="row">
+                    <div class="col-md-4">
+
+                    
+                    <button *ngIf="itemDetailsVisible" type="button" class="btn btn-light d-flex justify-content-center align-content-center" (click)="backToResults()" ><span class="material-icons align-middle">chevron_left</span> List</button>
+                    </div>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4"></div>
+                </div>
+                
+                
+                <!-- <div class="row" *ngIf="itemDetailsVisible">
+                    <div class="col-md-8 col-lg-10">
+
+                    </div>
+                    <div class="col-md-2 col-lg-1 align-content-end justify-content-end d-flex">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{this.websiteURL}}&amp;src=sdkpreparse" target="_blank"><img src = "../../assets/facebook.png" height="60" width="60"></a>
+                    </div>
+                    <div class="col-md-2 col-lg-1 align-content-end justify-content-end d-flex">
+                    <button type="button"  class="btn btn-light " (click)="addToWishList(capturedItem)" *ngIf="!isWishListed(capturedItem['itemId'][0])"><span class="material-icons align-middle px-2 py-2" style="color: black;">add_shopping_cart </span>
+                    </button>
+                    <button type="button"  class="btn btn-light" (click)="deleteFromWishList(capturedItem['itemId'][0],this.capturedItem['price'])" *ngIf="isWishListed(capturedItem['itemId'][0])">
+                        <span class="material-icons align-middle py-2 px-2" style="color: #ac8b33;">
+                                remove_shopping_cart
+                            </span>
+                        </button>
+
+                    </div>
+                    
+
+                </div> -->
+
+               
+                    <div  *ngIf="itemDetailsVisible" class="" style="display: inline-flex; justify-content: flex-end;">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{this.websiteURL}}&amp;src=sdkpreparse" target="_blank"><img src = "../../assets/facebook.png" height="50" width="50"></a>
+                    
+                   
+                    <button type="button"  class="btn btn-light " (click)="addToWishList(capturedItem,true)" *ngIf="!isWishListed(capturedItem['itemId'][0],true)"><span class="material-icons align-middle px-1 py-1" style="color: black;">add_shopping_cart </span>
+                    </button>
+                    <button type="button"  class="btn btn-light" (click)="deleteFromWishList(capturedItem['itemId'][0],this.capturedItem['price'])" *ngIf="isWishListed(capturedItem['itemId'][0]),true">
+                        <span class="material-icons align-middle py-1 px-1" style="color: #ac8b33;">
+                                remove_shopping_cart
+                            </span>
+                        </button>
+                    </div>
+
+                  
+
+               
+
+                <tabset *ngIf="itemDetailsVisible" >
+
+                    <tab heading="Product" id="tab1" >
+                            
+                            <table  class="table table-dark table-striped table-hover" *ngIf="itemDetailsVisible">
+                                <tbody>
+                                    <tr *ngIf="objectKeys('singleItemTable')?.length!=0">
+                                        <td  scope="row" class="text-white col-md-5">
+                                        Product Images
+                                        </td>
+                                        <td class="col-md-7">
+                                            <a class="tablinkcolor"(click)="openModal()"> View Product Images Here</a>
+                
+                                        </td>
+                                    </tr>
+                                        <tr *ngFor="let item of objectKeys('singleItemTable')">
+                
+                                            <td scope="row" class="text-white col-md-5"> {{item}}</td>
+                                            <td class="col-md-7">
+                                                {{singleItemTable[item]}}
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                
+                        </table>
+                    </tab>
+                    <tab heading="Photos" (selectTab)="onTabSelect($event)">
+
+                          <div class="masonary-container">
+                            <div  class="masonry-item" *ngFor="let item of photoTabLinks">
+                                <a href="{{item['link']}}" target="_blank"><img src="{{item['link']}}"   class= "gallery-img" alt="Product Photo"></a>
+                           </div>
+                           </div>
+                       
+
+                    </tab>
+                    <tab heading="Shipping">
+                        <table  class="table table-dark">
+                            <tbody>
+                                <tr>
+
+                                
+                                    <tr *ngFor="let item of objectKeys('shippingTable')">
+            
+                                        <td scope="row" class="text-white col-md-7"> {{item}}</td>
+                                        <td class="col-md-4" *ngIf="item !='Expedited Shipping' && item !='One Day Shipping' && item !='Return Accepted' ">
+                                            {{shippingItemTable[item]}}
+                                        </td>
+                                        <td class="col-md-7" *ngIf="item !='Shipping Cost' && item !='Ship To Locations' && item !='Handling Time' && item == 'Expedited Shipping' && shippingItemTable[item] == 'true' ">
+                                            <span class="material-icons green" >
+                                                done
+                                                </span>
+                                        </td>
+                                        <td class="col-md-7" *ngIf="item !='Shipping Cost' && item !='Ship To Locations' && item !='Handling Time' && item == 'Expedited Shipping' && shippingItemTable[item] == 'false' ">
+                                            <span class="material-icons red">
+                                                close
+                                                </span>
+                                        </td>
+                                        <td class="col-md-7" *ngIf="item !='Shipping Cost' && item !='Ship To Locations' && item !='Handling Time' && item == 'One Day Shipping' && shippingItemTable[item] == 'true' ">
+                                            <span class="material-icons green" >
+                                                done
+                                                </span>
+                                        </td>
+                                        <td class="col-md-7" *ngIf="item !='Shipping Cost' && item !='Ship To Locations' && item !='Handling Time' && item == 'One Day Shipping' && shippingItemTable[item] == 'false' ">
+                                            <span class="material-icons red">
+                                                close
+                                                </span>
+                                        </td>
+                                        <td class="col-md-7" *ngIf="item !='Shipping Cost' && item !='Ship To Locations' && item !='Handling Time' && item == 'Return Accepted' && shippingItemTable[item] == 'true' ">
+                                            <span class="material-icons green" >
+                                                done
+                                                </span>
+                                        </td>
+                                        <td class="col-md-7" *ngIf="item !='Shipping Cost' && item !='Ship To Locations' && item !='Handling Time' && item == 'Return Accepted' && shippingItemTable[item] == 'false' ">
+                                            <span class="material-icons red">
+                                                close
+                                                </span>
+                                        </td>
+                                        
+                                    </tr>
+                                    
+                                </tbody>
+            
+                    </table>
+
+
+                    </tab>
+                    <tab heading="Seller">
+                        <div class="text-center pb-3 pt-2" style="background-color: #212529;">
+                            <h6 class="text-white" style="margin: 0px!important;"> {{sellerInfoTable['Store Name']}}</h6>
+                        </div>
+                        <table  class="table table-dark table-striped">
+
+                            <tbody>
+                                    <tr *ngFor="let item of objectKeys('sellerInfo')">
+            
+                                        <td scope="row" class="text-white col-md-7"> {{item}}</td>
+                                        <td class="col-md-5" *ngIf="item !='Popularity' && item !='Feedback Rating Star' && item !='Buy Product At' && item!=='Top Rated' ">
+                                            {{sellerInfoTable[item]}}
+                                        </td>
+                                        <td class="col-md-4" *ngIf="item =='Popularity'">
+                                        <circle-progress
+                                        [percent]="sellerInfoTable[item]"
+                                        [maxPercent] = "100"
+                                        titleFontSize ="14"
+                                        [showSubtitle]="false"
+                                        [showUnits]="false"
+                                        [radius]="18"
+                                        [outerStrokeWidth]="3"
+                                        [innerStrokeWidth]="0"
+                                        [outerStrokeColor]="'green'"
+                                        [innerStrokeColor]="'green'"
+                                        [titleColor] = "'white'"
+                                    >
+                                </circle-progress>
+                                        
+                                        </td>
+
+                                        <td class="col-md-5" *ngIf="item == 'Top Rated' && sellerInfoTable[item] == true ">
+                                            <span class="material-icons green" >
+                                                done
+                                                </span>
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Top Rated' && sellerInfoTable[item] == false ">
+                                            <span class="material-icons red" >
+                                                close
+                                                </span>
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=0 && sellerInfoTable['FeedBack Score']<=9 ">
+                                            {{sellerInfoTable[item]}}
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=50 && sellerInfoTable['FeedBack Score']<=99 ">
+                                            <span class="material-icons blue">
+                                            {{sellerInfoTable[item]}}
+                                            </span>
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=100 && sellerInfoTable['FeedBack Score']<=499 ">
+                                            <span class="material-icons turquoise">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=10 && sellerInfoTable['FeedBack Score']<=49 ">
+                                            <span class="material-icons yellow">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=500 && sellerInfoTable['FeedBack Score']<=990 ">
+                                            <span class="material-icons purple">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=1000 && sellerInfoTable['FeedBack Score']<=4999 ">
+                                            <span class="material-icons red">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=5000 && sellerInfoTable['FeedBack Score']<=9999 ">
+                                            <span class="material-icons green">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=10000 && sellerInfoTable['FeedBack Score']<=24999 ">
+                                            <span class="material-icons yellow">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=25000 && sellerInfoTable['FeedBack Score']<=49999 ">
+                                            <span class="material-icons turquoise">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=50000 && sellerInfoTable['FeedBack Score']<=99999 ">
+                                            <span class="material-icons purple">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=100000 && sellerInfoTable['FeedBack Score']<=499000 ">
+                                            <span class="material-icons  red">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=500000 && sellerInfoTable['FeedBack Score']<=999000 ">
+                                            <span class="material-icons  green">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Feedback Rating Star' && sellerInfoTable['FeedBack Score']>=1000000 ">
+                                            <span class="material-icons  silver">
+                                                {{sellerInfoTable[item]}}
+                                            </span>
+                                            
+                                        </td>
+                                        <td class="col-md-5" *ngIf="item == 'Buy Product At' ">
+                                           
+                                                <a class="tablinkcolor" href="{{sellerInfoTable[item]}}" target="_blank">Store</a>
+                                            
+                                            
+                                        </td>
+                                        
+                                    </tr>
+                                    
+                                </tbody>
+            
+                    </table>
+
+
+                    </tab>
+                    <tab heading="Similar Products" (selectTab)="onTabSelect($event)" >
+
+                    <div *ngIf="this.noSimilarProducts" class="row no-results-view d-flex justify-content-center align-content-center">
+                            <p class="mx-2 my-auto py-3 text-color align-content-center ">No Records</p>
+                        </div>
+                        
+                    <div class="row" *ngIf="this.similarProductstable.length>0">
+                        <div class="col-md-2">
+
+                        <select  class="form-select mb-3" aria-label="Default select example" (change)="onSortByChange($event)">
+                            <option value="Default" selected>Default</option>
+                            <option value="product_name">Product Name</option>
+                            <option value="price">Price</option>
+                            <option value="shipping_cost">Shipping Cost</option>
+                            <option value="days_left">Days Left</option>
+                          </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select mb-3" aria-label="Default select example" [disabled]="sortOrderActive" (change)="onSortOrderChange($event)">
+                                <!-- <option hidden>Ascending</option> -->
+                                <option selected value="Ascending">Ascending</option>
+                                <option value="Descending">Descending</option>
+                                
+                              </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                        
+                        </div>
+                        <div class="col-md-4">
+
+                        </div>
+                            <!-- <div class="col-md-4">
+                                <select class="form-select form-select mb-3" id = "categoryId"  formControlName="categoryId  "aria-label=".form-select-lg example" data-title="Default">
+                                    <option selected> Default</option>
+                                    <option value="Product Name">Product Name</option>
+                                    <option value="Price">Price</option>
+                                    <option value="Shipping">Shipping</option>
+                                    <option value="Price">Days Left</option>
+                                   </select>
+                            </div>
+                      
+                        <div class="col-md-4">
+                            <select class="form-select form-select mb-3" id = "category"  formControlName="categoryId   "aria-label=".form-select-lg example" title="Default">
+                           
+                                <option value = "Default" >Default</option>
+                                <option value="Product Name">Product Name</option>
+                                <option value="Price">Price</option>
+                                <option value="Shipping">Shipping</option>
+                                <option value="Price">Days Lect</option>
+                               </select>
+                        </div> -->
+
+                        
+
+                      
+
+                        
+                        <div class="row bg-dark mb-2 py-2 item-style" *ngFor="let item of similarProductstable">
+                            <div class="col-lg-3 col-md-4  col-sm-12 text-center justify-content-center align-items-center" style="padding: 0px!important;">
+                            <img src="{{item['imageURL']}}" alt="" class="similar-product-image text-center">
+                            </div>
+                         
+                            <div class=" col-lg-9 col-md-8 col-sm-12 justify-content-start ml-3" style="padding: 0px!important;">
+                            <a target="_blank" class="tablinkcolor a-tag-without-underlin" href="{{item['viewItemURL']}}">{{item['title']}}</a>
+                            <br/>
+                          <p class="green-shade" style="margin: 0px!important; padding: 0px!important">Price : ${{item['buyItNowPrice'].__value__}}
+                            
+                          </p>
+                            <p class="yellow" style="padding: 0px!important; margin: 0px!important;">
+                                Shipping Cost: ${{item['shippingCost'].__value__}}
+                            </p>
+                            <p class="text-white">
+                                Days Left : {{item['days_left']}}
+                            </p>
+                            </div>
+                        
+                        </div>
+                        <div class=" justify-content-center text-center align-content-center">
+
+                        
+                        <button type="button" class="btn btn-dark text-center" *ngIf="!showMoreActive" (click)="showMore(true)" >Show More</button>
+                    </div>
+                        <div class="container" *ngIf="showMoreActive && this.moreProducts.length>0" >
+                             <div class="row bg-dark mb-2 py-2 item-style"   *ngFor="let item of moreProducts" >
+                            <div class="col-lg-3 col-md-4  col-sm-12 text-center justify-content-center align-items-center" style="padding: 0px!important;">
+                            <img src="{{item['imageURL']}}" alt="" class="similar-product-image text-center">
+                            </div>
+                         
+                            <div class=" col-lg-9 col-md-8 col-sm-12 justify-content-start ml-3" style="padding: 0px!important;">
+                            <a target="_blank" class="tablinkcolor" href="{{item['viewItemURL']}}">{{item['title']}}</a>
+                            <br/>
+                          <p class="green-shade" style="margin: 0px!important; padding: 0px!important">Price : ${{item['buyItNowPrice'].__value__}}
+                            
+                          </p>
+                            <p class="yellow" style="padding: 0px!important; margin: 0px!important;">
+                                Shipping Cost: ${{item['shippingCost'].__value__}}
+                            </p>
+                            <p class="text-white">
+                                Days Left : {{item['days_left']}}
+                            </p>
+                            </div>
+                        </div>
+                        
+                        </div>
+                        <div class="justify-content-center align-content-center text-center">
+                        <button type="button" class="btn btn-dark text-center " *ngIf="showMoreActive" (click)="showMore(false)">Show Less</button>
+                    </div>
+                    </tab>
+                  </tabset>
+                
+                <!-- <ul class="nav nav-pills justify-content-end" *ngIf="isSinglItemTableEmpty()!==0" > 
+                    <li class="nav-item">
+                      <a class="nav-link active" aria-current="page">Product</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" (click)="getPhotos()" [routerLink]="[]" >Photos</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">Shipping</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link disabled" aria-disabled="true">Seller</a>
+                    </li>
+                  </ul> -->
+                  
+               
+        
+        </div>
+        </div>
+        </div>
+        <div class="col-md-2"></div>
+      
+
+          
+    </div>
+
+</div>

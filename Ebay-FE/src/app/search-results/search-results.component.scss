@@ -1,0 +1,124 @@
+.gallery-img{
+    width: 100%;
+    height: auto;
+    border: 8px solid black;
+    object-fit: contain;
+}
+
+.masonary-container {
+    column-count: 3;
+    column-gap: 0px 5px;
+    // width: 1200px;
+ }
+
+.masonry-item { 
+    margin: 0;
+    display: inline-block;
+    margin-bottom: 5px;
+    width: 100%;
+ }
+ .masonary{
+    height:auto
+ }
+
+ .green{
+    color: green
+ }
+ 
+ .red{
+    color: red
+ }
+ .yellow{
+    color: yellow;
+ }
+ .blue{
+    color: blue;
+ }
+ .turquoise{
+    color: turquoise;
+ }
+ .purple{
+    color: purple;
+ }
+ .silver{
+    color: silver;
+ }
+
+.tablinkcolor{
+    color: #3a6e86!important;
+    text-decoration: none!important;
+}
+.tablinkcolor:hover{
+   text-decoration: underline!important;
+
+}
+
+.black{
+    color: black;
+}
+
+.similar-product-image
+{
+   width: 150px;
+   height: auto;
+}
+.green-shade{
+   color: #97b897
+}
+.yellow-shade {
+   color: #765e2c;
+}
+ .progress-number {
+    position: absolute;
+    bottom: 50%;
+    left:12%;
+    // left: 50%;
+   
+    font-size: 12px;
+    color: white; /* Adjust the color as needed */
+  }
+ .dropdown-menu {
+   position: absolute;
+   top: 105%;
+   left: 0;
+   background-color:#4e4b4e
+ }
+
+ .btn-outline-secondary{
+   background-color: transparent;
+ }
+ .btn-outline-secondary:hover{
+background-color: transparent!important;
+color: #6c757d;
+border-color: lightblue;
+box-shadow: inset 
+ }
+
+ .dropdown-menu li:hover a.dropdown-item {
+   background-color: #2156b9
+ }
+
+ .custom-dropdown .custom-caret::before {
+   display: none; /* Hide the default caret */
+ }
+
+ .dropdown-toggle::after{
+   display: none;
+ }
+
+ .item-style{
+   border-radius: 5px;
+ }
+
+ .no-results-view{
+   background-color: #fff2cd;
+   border-radius: 5px;
+
+ }
+ .text-color{
+   color:#a08f5f
+ }
+
+
+ 
+

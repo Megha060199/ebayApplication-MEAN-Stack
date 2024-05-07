@@ -1,0 +1,16 @@
+:root{
+    --bs-border-radius: 0.275rem!important
+}
+
+
+
+input.ng-invalid.ng-touched {
+    border: red 1px solid;
+}
+
+@media (max-width: 576px) {
+    .mx-4 {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+  }

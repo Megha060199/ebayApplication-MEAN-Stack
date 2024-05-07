@@ -1,0 +1,101 @@
+
+
+// Uncomment the following lines if you want to add a custom palette:
+// $primary: #731963 !default;
+// $secondary: #ce5712 !default;
+// $app-palette: palette($primary, $secondary, $surface);
+
+/* autoprefixer grid: on */
+
+/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Importing Bootstrap SCSS file. */
+// @import "./node_modules/bootstrap/scss/bootstrap";
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+/* Importing Datepicker SCSS file. */
+@import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
+@import "node_modules/bootstrap/scss/_carousel.scss";
+@import "node_modules/bootstrap/scss/_nav.scss";
+
+
+
+
+.table-active{
+    --bs-table-bg-state:#c7c8ca!important
+}
+
+.tooltip-class .tooltip-inner{
+    background-color:#2c3034;
+    font-size: 12px;
+ 
+  }
+
+  .a-tag-without-underline{
+    text-decoration: none!important
+  }
+  .a-tag-without-underline:hover{
+    text-decoration: underline!important;
+ 
+  }
+ 
+
+// .carousel-indicators {
+//     position: relative;
+//     display: none!important;
+//   }
+//   .icon-next{
+    
+    
+
+//   }
+
+
+// .carousel-control-next-icon{
+//     background-color: rgb(115,115,117);
+//     height: 20px;
+//     width: 20px;
+//     font-weight: bold;
+// }
+
+// .carousel-control-prev-icon{
+//     background-color: rgb(115,115,117);
+//     height: 20px;
+//     width: 20px;
+//     font-weight: bold;
+    
+// }
+   
+
+// .carousel-control-next-icon:hover{
+//     background-color: black;
+// }
+
+// .carousel-control-prev-icon:hover{
+//     background-color: black;
+// }
+
+.nav-link.active{
+    background-color: black!important;
+    color: white !important;
+}
+.nav-link{
+    color: black!important;
+}
+
+.nav-tabs{
+    justify-content: end;
+    margin-bottom: 10px!important
+}
+
+.custom-dropdown{
+    position: relative;
+}
