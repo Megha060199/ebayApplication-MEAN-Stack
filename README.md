@@ -1,7 +1,8 @@
-This is an ecommerce web application built on ###
+## This is an ecommerce web application built on ##
 Node.js,Express.js, Angular.js,MongoDb 
 
-##Features##
+## Features ##
+
 - WISHLISTING ITEMS
 - ITEM SEARCH BASED ON
     - CATEGORY
