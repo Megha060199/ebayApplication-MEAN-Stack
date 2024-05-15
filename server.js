@@ -11,8 +11,6 @@ import { configDotenv } from "dotenv"
 import { GridFSBucket } from "mongodb"
 
 
-
-
 var app = express()
 
 var port = process.env.PORT || 8080
@@ -23,14 +21,13 @@ const corsOptions = {
 
 };
 
-// var jsonParser = bodyParser.json()
+
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// app.use(jsonParser)
 app.listen(port, () => {
   console.log(`Server running on ${port}`)
 })
@@ -38,18 +35,13 @@ app.listen(port, () => {
 //   res.send("Hello, world!");
 // });
 
-// app.get('',(req,res)=>{
-// res.send('Hello world yayy i made changes')
-// })
-// var client_id = "MeghaCha-app-PRD-372726e2f-c683d8ca"
-// var client_secret = "PRD-72726e2fec65-55d4-4965-827d-869b"
 const uri = "mongodb+srv://mchandwa:PWOkSEzlO7DQlwlk@cluster0.4ghrcrh.mongodb.net/ContactApplication?retryWrites=true&w=majority"
 
 
 const client = new MongoClient(uri);
 
 const storage = new GridFsStorage({
-  url: uri, // Provide the MongoDB URI here
+  url: uri, 
   file: async (req, file) => {
 
     const metadata = {
@@ -76,7 +68,6 @@ const upload = multer({ storage })
 
 app.post("/upload", upload.single("image"), (req, res) => {
   const file = req.file
-  // Respond with the file details
   res.send({
     message: "Uploaded",
     id: 1,
@@ -91,7 +82,6 @@ app.get('/insertInWishList', async (req, res) => {
 
     const data = req.query;
 
-    // Connect to MongoDB
     await client.connect();
     const db = client.db('ebay');
     const wishlist = db.collection('wishlist');
@@ -103,7 +93,6 @@ app.get('/insertInWishList', async (req, res) => {
 
       const allwishlistedItems = await wishlist.find({}).toArray();
       res.status(200).json({ 'data': Object.values(allwishlistedItems) });
-      // res.status(200).json(result)
     }
 
 
@@ -164,12 +153,10 @@ app.get("/download/", async (req, res) => {
 
     const filenames = req.query.filenames;
 
-    // Assuming filenames are sent as a query parameter array
     const decodedFilenames = filenames.split(',');
     if (!Array.isArray(decodedFilenames) || decodedFilenames.length === 0) {
       return res.status(400).send({ error: "Filenames array is required" });
     }
-    console.log(decodedFilenames, 'checkkkkkk file names decoded')
 
     const downloadPromises = decodedFilenames.map((filename) => {
       return new Promise((resolve, reject) => {
@@ -243,13 +230,15 @@ app.use(express.static("./build"))
 //     }
 //   });
 
+
+// WIP
 app.post('/updateUser',async(req,res)=>{
 
 
   const contactId = req.body.id;
   console.log(req.body)
-   // Assuming the contactId is passed in the request URL
-  console.log( contactId, "OMGGGGGG")
+   
+
   if (contactId) {
     const db = client.db('ContactApplication');
     const collection = db.collection('Contacts.files');
@@ -266,7 +255,6 @@ app.post('/updateUser',async(req,res)=>{
     
     }
 
-  
 })
 app.post('/updateUser', async (req, res) => {
   try {
@@ -306,15 +294,9 @@ app.get('/removeItem/:id', async (req, res) => {
     await client.connect();
     const db = client.db('ebay');
     const collection = db.collection('wishlist');
-
-    // Get the ID from the request parameters
     const itemId = req.params.id;
     console.log(itemId, 'checkkk')
 
-    // Convert the itemId to an ObjectID
-    //   const itemObjectId = new ObjectId(itemId);
-
-    // Remove the item by its ID
     const result = await collection.deleteOne({ _id: itemId });
     console.log(result, 'check-result')
     if (result.deletedCount) {
@@ -332,38 +314,6 @@ app.get('/removeItem/:id', async (req, res) => {
   }
 });
 
-app.get('/removeItem/:id', async (req, res) => {
-  try {
-
-
-    await client.connect();
-    const db = client.db('ebay');
-    const collection = db.collection('wishlist');
-
-    // Get the ID from the request parameters
-    const itemId = req.params.id;
-    console.log(itemId, 'checkkk')
-
-    // Convert the itemId to an ObjectID
-    //   const itemObjectId = new ObjectId(itemId);
-
-    // Remove the item by its ID
-    const result = await collection.deleteOne({ _id: itemId });
-    console.log(result, 'check-result')
-    if (result.deletedCount) {
-      const allwishlistedItems = await collection.find({}).toArray();
-      res.status(200).json({ 'data': Object.values(allwishlistedItems) });
-    } else {
-      res.status(404).json({ message: 'Item not found' });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error removing the item' });
-  }
-  finally {
-    await client.close();
-  }
-});
 
 app.get('/getContactList', async (req, res) => {
 
@@ -404,11 +354,10 @@ app.get('/getContactList', async (req, res) => {
 
 app.get('/getWishlistedItems', async (req, res) => {
   try {
-    // Connect to MongoDB
     await client.connect();
 
-    const database = client.db('ebay'); // Replace with your database name
-    const collection = database.collection('wishlist'); // Replace with your collection name
+    const database = client.db('ebay'); 
+    const collection = database.collection('wishlist'); 
 
     const data = await collection.find({}).toArray();
     console.log(data, 'checkkk')
@@ -417,7 +366,6 @@ app.get('/getWishlistedItems', async (req, res) => {
     console.error('Error retrieving data:', error);
     res.status(500).json({ error: 'An error occurred while retrieving data' });
   } finally {
-    // Close the MongoDB connection
     await client.close();
   }
 });
@@ -426,7 +374,6 @@ app.get('/getWishlistedItems', async (req, res) => {
 
 app.get('/getItemsByKeyword', async (req, res) => {
   try {
-    // console.log(req,'see request')
     var data = JSON.stringify(req.query)
     console.log(`----------------${data}------------------- checkkkk request obj`)
     var payload = {}
@@ -478,7 +425,6 @@ var composePayload = (data, payload) => {
 
       if (k == 'Condition') {
 
-        // payload[`itemFilter(${count}).name`] = k
         if (typeof (parsedQueryData[k]) == 'string') {
 
 
@@ -493,12 +439,7 @@ var composePayload = (data, payload) => {
             }
             count += 1
           }
-
         }
-
-
-
-
       }
       else {
 
@@ -516,8 +457,6 @@ var composePayload = (data, payload) => {
 
     }
   }
-  console.log(payload, 'check-payload')
-
 
 }
 
@@ -540,7 +479,6 @@ app.get('/pinCodeSuggestion', async (req, res) => {
   }
   catch (err) {
     console.log(err, 'ERROR GEONAMESSSS')
-    // res.send(err.response.status)
 
 
   }
@@ -624,7 +562,6 @@ var getToken = async () => {
     clientSecret: client_secret
   });
   const token = await ebayAuthToken.getApplicationToken('PRODUCTION');
-  // console.log(token,'see tokennnn')
   return token
 }
 
